@@ -1,0 +1,109 @@
+﻿@page "/"
+@inject IJSRuntime JS
+
+<h3>Dashboard</h3>
+
+<div class="dashboard-container">
+    <!-- Monthly Payment Status Bar Chart -->
+    <div class="chart-container">
+        <h4>Monthly Payment Status</h4>
+        <canvas id="monthlyPaymentChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Transaction Summary Gauge -->
+    <div class="transaction-summary">
+        <h4>Transaction Summary</h4>
+        <div class="gauge">
+            <span>Successful: @successfulTransactions</span>
+            <span>Failed: @failedTransactions</span>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<div class="dashboard-container">
+    <!-- Total Payment Sum for Selected Month -->
+    <div class="total-payment-sum">
+        <h4>Total Payment Sum</h4>
+        <label>Select Month:</label>
+        <input type="month" @bind="selectedMonth" @bind:after="CalculateTotalPaymentSum" class="form-control w-75" />
+        <div>Total Payment for @selectedMonth.ToString("MMMM yyyy"): @totalPaymentSum.ToString("C")</div>
+    </div>
+
+    <!-- List of Unpaid Workers in a Table -->
+    <div class="unpaid-workers-table">
+        <h4>Unpaid Workers</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Worker ID</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var worker in unpaidWorkers)
+                {
+                    <tr>
+                        <td>@worker.WorkerId</td>
+                        <td>@worker.Name</td>
+                        <td><span class="badge bg-danger">Failed</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    // Mock data class for monthly payment status
+    public class MonthStatus
+    {
+        public string MonthName { get; set; }
+        public bool IsPaid { get; set; }
+    }
+
+    // Mock data class for worker details
+    public class Worker
+    {
+        public int WorkerId { get; set; }
+        public string Name { get; set; }
+    }
+
+    private DateTime selectedMonth = DateTime.Now;
+    private decimal totalPaymentSum;
+    private int successfulTransactions = 8; // Mockup count of successful transactions
+    private int failedTransactions = 3;     // Mockup count of failed transactions
+
+    private List<MonthStatus> monthlyPaymentStatus = new List<MonthStatus>
+    {
+        new MonthStatus { MonthName = "January", IsPaid = true },
+        new MonthStatus { MonthName = "February", IsPaid = false },
+        new MonthStatus { MonthName = "March", IsPaid = true },
+        new MonthStatus { MonthName = "April", IsPaid = false },
+        new MonthStatus { MonthName = "May", IsPaid = true }
+    };
+
+    private List<Worker> unpaidWorkers = new List<Worker>
+    {
+        new Worker { WorkerId = 101, Name = "John Doe" },
+        new Worker { WorkerId = 102, Name = "Jane Smith" },
+        new Worker { WorkerId = 103, Name = "Bob Johnson" }
+    };
+
+    private void CalculateTotalPaymentSum()
+    {
+        totalPaymentSum = 5000.00M;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize the chart after the first render
+            // This should log the Chart object if Chart.js is loaded correctly.
+            await JS.InvokeVoidAsync("initializePaymentChart", monthlyPaymentStatus);
+        }
+    }
+}

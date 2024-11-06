@@ -1,0 +1,124 @@
+﻿@page "/payment-account"
+
+<h3>Manage Payment Accounts</h3>
+
+<!-- Form to Add New Payment Account -->
+<div class="form-container">
+    <h4>Add Payment Account</h4>
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="accountName">Account Name</label>
+            <input type="text" id="accountName" class="form-control" @bind="newAccount.AccountName" />
+        </div>
+        <div class="col-md-3">
+            <label for="accountNumber">Account Number</label>
+            <input type="text" id="accountNumber" class="form-control" @bind="newAccount.AccountNumber" />
+        </div>
+        <div class="col-md-3">
+            <label for="bankName">Bank Name</label>
+            <input type="text" id="bankName" class="form-control" @bind="newAccount.BankName" />
+        </div>
+        <div class="col-md-3">
+            <label for="accountType">Account Type</label>
+            <select id="accountType" class="form-select" @bind="newAccount.AccountType">
+                <option value="">Select Type</option>
+                <option value="Checking">Checking</option>
+                <option value="Savings">Savings</option>
+                <option value="Credit">Credit</option>
+            </select>
+        </div>
+    </div>
+    <button class="btn btn-primary" @onclick="AddAccount">Add Account</button>
+</div>
+
+<hr />
+
+<!-- Table for Payment Accounts -->
+<h4>Payment Accounts</h4>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Account ID</th>
+                <th>Account Name</th>
+                <th>Account Number</th>
+                <th>Bank Name</th>
+                <th>Account Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var account in paymentAccounts)
+            {
+                <tr>
+                    <td>@account.AccountId</td>
+                    <td>@account.AccountName</td>
+                    <td>@account.AccountNumber</td>
+                    <td>@account.BankName</td>
+                    <td>@account.AccountType</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-2" @onclick="() => EditAccount(account)">Edit</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteAccount(account.AccountId)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    // Mockup data class for PaymentAccount
+    public class PaymentAccount
+    {
+        public int AccountId { get; set; }
+        public string AccountName { get; set; }
+        public string AccountNumber { get; set; }
+        public string BankName { get; set; }
+        public string AccountType { get; set; }
+    }
+
+    // Sample list to hold payment accounts
+    private List<PaymentAccount> paymentAccounts = new List<PaymentAccount>
+    {
+        new PaymentAccount { AccountId = 1, AccountName = "John Doe", AccountNumber = "123456789", BankName = "Bank A", AccountType = "Checking" },
+        new PaymentAccount { AccountId = 2, AccountName = "Jane Smith", AccountNumber = "987654321", BankName = "Bank B", AccountType = "Savings" }
+    };
+
+    // Temporary storage for new account
+    private PaymentAccount newAccount = new PaymentAccount();
+
+    private void AddAccount()
+    {
+        if (!string.IsNullOrEmpty(newAccount.AccountName) && !string.IsNullOrEmpty(newAccount.AccountNumber))
+        {
+            // Generate a new ID (mock example)
+            newAccount.AccountId = paymentAccounts.Count + 1;
+            paymentAccounts.Add(newAccount);
+            newAccount = new PaymentAccount(); // Reset form
+        }
+    }
+
+    private void EditAccount(PaymentAccount account)
+    {
+        // Logic for editing an account
+        // Populate newAccount with selected account data for demonstration
+        newAccount = new PaymentAccount
+            {
+                AccountId = account.AccountId,
+                AccountName = account.AccountName,
+                AccountNumber = account.AccountNumber,
+                BankName = account.BankName,
+                AccountType = account.AccountType
+            };
+    }
+
+    private void DeleteAccount(int accountId)
+    {
+        // Remove the selected account
+        var account = paymentAccounts.FirstOrDefault(a => a.AccountId == accountId);
+        if (account != null)
+        {
+            paymentAccounts.Remove(account);
+        }
+    }
+}

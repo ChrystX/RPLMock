@@ -1,0 +1,78 @@
+﻿@page "/payment-logbook"
+
+<h3>Payment Logbook</h3>
+
+<!-- Table for Payment Records by Month -->
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>Target Account</th>
+                <th>Worker's ID</th>
+                <th>Source Account</th>
+                <th>Date</th>
+                <th>Nominal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var record in filteredRecords)
+            {
+                <tr>
+                    <td>@record.TransactionId</td>
+                    <td>@record.TargetAccount</td>
+                    <td>@record.WorkerId</td>
+                    <td>@record.SourceAccount</td>
+                    <td>@record.Date.ToString("yyyy-MM-dd")</td>
+                    <td>@record.Nominal.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<hr />
+
+<!-- Month Selector and Export Button -->
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <label for="monthSelector">Select Month:</label>
+        <input type="month" id="monthSelector" class="form-control d-inline-block" style="width: 200px;" @bind="selectedMonth" />
+    </div>
+    <button class="btn btn-primary" @onclick="ExportToPdf">Export to PDF</button>
+</div>
+
+@code {
+    // Mockup data class for PaymentRecord (same as Transaction but no Status field)
+    public class PaymentRecord
+    {
+        public int TransactionId { get; set; }
+        public string TargetAccount { get; set; }
+        public int WorkerId { get; set; }
+        public string SourceAccount { get; set; }
+        public DateTime Date { get; set; }
+        public decimal Nominal { get; set; }
+    }
+
+    // Sample payment records data (only successful transactions)
+    private List<PaymentRecord> paymentRecords = new List<PaymentRecord>
+    {
+        new PaymentRecord { TransactionId = 1, TargetAccount = "987654321", WorkerId = 101, SourceAccount = "123456789", Date = new DateTime(2024, 10, 10), Nominal = 1500.00M },
+        new PaymentRecord { TransactionId = 2, TargetAccount = "876543210", WorkerId = 102, SourceAccount = "123456789", Date = new DateTime(2024, 11, 5), Nominal = 1200.00M },
+        new PaymentRecord { TransactionId = 3, TargetAccount = "765432109", WorkerId = 103, SourceAccount = "987654321", Date = new DateTime(2024, 11, 3), Nominal = 1800.00M }
+    };
+
+    // Selected month filter
+    private DateTime selectedMonth = DateTime.Now;
+
+    // Filtered list for displaying records by month
+    private List<PaymentRecord> filteredRecords => paymentRecords
+        .Where(record => record.Date.Year == selectedMonth.Year && record.Date.Month == selectedMonth.Month)
+        .ToList();
+
+    private void ExportToPdf()
+    {
+        // Implement PDF export logic here
+        // This could involve a service that generates PDF from the filteredRecords list
+    }
+}

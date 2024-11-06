@@ -1,0 +1,103 @@
+﻿@page "/transaction"
+
+<h3>Transaction History</h3>
+
+<!-- Table for Transaction History -->
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>Target Account</th>
+                <th>Worker's ID</th>
+                <th>Source Account</th>
+                <th>Date</th>
+                <th>Nominal</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in transactions)
+            {
+                <tr>
+                    <td>@transaction.TransactionId</td>
+                    <td>@transaction.TargetAccount</td>
+                    <td>@transaction.WorkerId</td>
+                    <td>@transaction.SourceAccount</td>
+                    <td>@transaction.Date.ToString("yyyy-MM-dd")</td>
+                    <td>@transaction.Nominal.ToString("C")</td>
+                    <td>
+                        <span class="badge @(transaction.Status == "Success" ? "bg-success" : "bg-danger")">
+                            @transaction.Status
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<hr />
+
+<h4>Initiate Payment</h4>
+
+<!-- Payment initiation form -->
+<div class="form-container">
+    <div class="row mb-2">
+        <div class="col-md-4">
+            <label for="sourceAccount">Payment Source Account</label>
+            <select id="sourceAccount" class="form-select" @bind="selectedSourceAccount">
+                <option value="">Select an account</option>
+                @foreach (var account in paymentSourceAccounts)
+                {
+                    <option value="@account">@account</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="paymentDate">Payment Date</label>
+            <input type="date" id="paymentDate" class="form-control" @bind="selectedPaymentDate" />
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button class="btn btn-primary" @onclick="InitiatePayment">Start Payment</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Mockup data class for Transaction
+    public class Transaction
+    {
+        public int TransactionId { get; set; }
+        public string TargetAccount { get; set; }
+        public int WorkerId { get; set; }
+        public string SourceAccount { get; set; }
+        public DateTime Date { get; set; }
+        public decimal Nominal { get; set; }
+        public string Status { get; set; }
+    }
+
+    // Sample transactions data
+    private List<Transaction> transactions = new List<Transaction>
+    {
+        new Transaction { TransactionId = 1, TargetAccount = "987654321", WorkerId = 101, SourceAccount = "123456789", Date = DateTime.Now.AddDays(-2), Nominal = 1500.00M, Status = "Success" },
+        new Transaction { TransactionId = 2, TargetAccount = "876543210", WorkerId = 102, SourceAccount = "123456789", Date = DateTime.Now.AddDays(-1), Nominal = 1200.00M, Status = "Failed" }
+    };
+
+    // Payment sources and selected options
+    private List<string> paymentSourceAccounts = new List<string> { "123456789", "987654321", "112233445" };
+    private string selectedSourceAccount;
+    private DateTime? selectedPaymentDate;
+
+    private void InitiatePayment()
+    {
+        if (string.IsNullOrEmpty(selectedSourceAccount) || selectedPaymentDate == null)
+        {
+            // Handle error if the user hasn't selected required options
+            return;
+        }
+
+        // Logic to initiate payment
+        // This is where you would add real payment initiation code
+    }
+}

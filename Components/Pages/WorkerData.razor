@@ -1,0 +1,121 @@
+﻿@page "/worker-data"
+
+<h3>Worker Data</h3>
+
+<!-- Form to add new worker data -->
+<div class="form-container">
+    <h5>Add New Worker</h5>
+    <div class="row mb-2">
+        <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Name" @bind="newWorker.Name" />
+        </div>
+        <div class="col-md-4">
+            <input type="email" class="form-control" placeholder="Email" @bind="newWorker.Email" />
+        </div>
+        <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Address" @bind="newWorker.Address" />
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Position (Department)" @bind="newWorker.Position" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Phone Number" @bind="newWorker.PhoneNumber" />
+        </div>
+        <div class="col-md-3">
+            <input type="number" class="form-control" placeholder="Salary" @bind="newWorker.Salary" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Bank Account" @bind="newWorker.BankAccount" />
+        </div>
+    </div>
+    <button class="btn btn-primary" @onclick="AddWorker">Add Worker</button>
+</div>
+
+<hr />
+
+<!-- Table to display worker data -->
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Position</th>
+                <th>Phone Number</th>
+                <th>Salary</th>
+                <th>Bank Account</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var worker in workers)
+            {
+                <tr>
+                    <td>@worker.Id</td>
+                    <td>@worker.Name</td>
+                    <td>@worker.Email</td>
+                    <td>@worker.Address</td>
+                    <td>@worker.Position</td>
+                    <td>@worker.PhoneNumber</td>
+                    <td>@worker.Salary</td>
+                    <td>@worker.BankAccount</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm me-2" @onclick="() => EditWorker(worker)">Update</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteWorker(worker.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    // Mockup data class for Worker
+    public class Worker
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Address { get; set; }
+        public string Position { get; set; }
+        public string PhoneNumber { get; set; }
+        public decimal Salary { get; set; }
+        public string BankAccount { get; set; }
+    }
+
+    // List to hold worker data
+    private List<Worker> workers = new List<Worker>
+    {
+        new Worker { Id = 1, Name = "John Doe", Email = "johndoe@example.com", Address = "123 Street", Position = "Manager", PhoneNumber = "123-456-7890", Salary = 55000, BankAccount = "123456789" },
+        new Worker { Id = 2, Name = "Jane Smith", Email = "janesmith@example.com", Address = "456 Avenue", Position = "Developer", PhoneNumber = "987-654-3210", Salary = 45000, BankAccount = "987654321" }
+    };
+
+    private Worker newWorker = new Worker();
+    private int nextId = 3;
+
+    private void AddWorker()
+    {
+        newWorker.Id = nextId++;
+        workers.Add(newWorker);
+        newWorker = new Worker(); // Reset form after adding
+    }
+
+    private void EditWorker(Worker worker)
+    {
+        // Logic to handle worker updates
+        // This is where you would populate the form with the worker's data
+    }
+
+    private void DeleteWorker(int id)
+    {
+        var worker = workers.FirstOrDefault(w => w.Id == id);
+        if (worker != null)
+        {
+            workers.Remove(worker);
+        }
+    }
+}
